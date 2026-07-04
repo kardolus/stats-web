@@ -317,7 +317,7 @@ def render_overview() -> str:
     for s in sites:
         dom = s["domain"] or ""
         name = s["name"] or dom or "—"
-        link = f'<a href="https://{dom}">{name}</a>' if dom else name
+        link = f'<a href="https://{dom}" target="_blank" rel="noopener">{name}</a>' if dom else name
         dim = "" if (s["visits"] or 0) > 0 else ' style="opacity:.5"'
         rows += (
             f'<tr{dim}><td>{link}</td>'
@@ -334,7 +334,7 @@ def render_overview() -> str:
       <div class="kpi"><div class="kpi-n">{_fmt(t["visits_24h"])}</div><div class="kpi-l">visits · last 24 h</div></div>
       <div class="kpi"><div class="kpi-n">{len(active)}<span class="meta" style="font-size:.5em"> / {len(sites)}</span></div><div class="kpi-l">sites with traffic</div></div>
     </div>
-    <p class="meta">Aggregated across every site tracked by <a href="https://analytics.kardol.us">Umami</a> · since {_ago(t["since"])} · updates every {CACHE_TTL // 60 or 1} min.</p>
+    <p class="meta">Aggregated across every site tracked by <a href="https://analytics.kardol.us" target="_blank" rel="noopener">Umami</a> · since {_ago(t["since"])} · updates every {CACHE_TTL // 60 or 1} min.</p>
     <div class="card"><div class="card-head"><h2>By site</h2></div>
       <div class="table-wrap"><table>
         <thead><tr><th>Site</th><th class="num">Visits</th><th class="num">7&nbsp;days</th><th class="num">Pageviews</th><th class="num">Since</th></tr></thead>
@@ -395,7 +395,7 @@ def shell(title: str, active: str, body: str) -> str:
 <div class="top-bar"><div class="top-utility">
   <div class="brand">{_LOGO} Analytics</div>
   <div class="top-actions">
-    <a class="nbhd-select" href="https://analytics.kardol.us" style="text-decoration:none;line-height:32px">Open Umami →</a>
+    <a class="nbhd-select" href="https://analytics.kardol.us" target="_blank" rel="noopener" style="text-decoration:none;line-height:32px">Open Umami →</a>
     <button class="dark-toggle" onclick="toggleDark()" title="Toggle dark mode">◐</button>
   </div>
 </div><nav class="top-nav">{nav}</nav></div>
