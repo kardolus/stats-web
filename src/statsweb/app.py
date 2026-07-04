@@ -395,7 +395,7 @@ def shell(title: str, active: str, body: str) -> str:
 <div class="top-bar"><div class="top-utility">
   <div class="brand">{_LOGO} Analytics</div>
   <div class="top-actions">
-    <a class="nbhd-select" href="https://analytics.kardol.us" target="_blank" rel="noopener" style="text-decoration:none;line-height:32px">Open Umami →</a>
+    <a class="nbhd-select" href="https://analytics.kardol.us" target="_blank" rel="noopener" style="text-decoration:none">Open Umami →</a>
     <button class="dark-toggle" onclick="toggleDark()" title="Toggle dark mode">◐</button>
   </div>
 </div><nav class="top-nav">{nav}</nav></div>
