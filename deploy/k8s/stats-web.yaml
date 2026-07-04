@@ -1,0 +1,49 @@
+# stats.kardol.us — cross-site Umami visitor rollup. Read-only (stats_ro) over the
+# umami-postgres DB. Lives in ns analytics alongside umami. Image on GHCR (ghcr-pull).
+# Secret stats-web-db (DATABASE_URL, the stats_ro DSN) created out-of-band.
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: stats-web, namespace: analytics, labels: {app: stats-web}}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: stats-web}}
+  template:
+    metadata: {labels: {app: stats-web}}
+    spec:
+      imagePullSecrets: [{name: ghcr-pull}]
+      containers:
+        - name: stats-web
+          image: ghcr.io/kardolus/stats-web:v1
+          imagePullPolicy: IfNotPresent
+          ports: [{containerPort: 8000, name: http}]
+          env:
+            - name: DATABASE_URL
+              valueFrom: {secretKeyRef: {name: stats-web-db, key: DATABASE_URL}}
+          readinessProbe: {httpGet: {path: /ready, port: 8000}, initialDelaySeconds: 5, periodSeconds: 15}
+          livenessProbe: {httpGet: {path: /healthz, port: 8000}, initialDelaySeconds: 10, periodSeconds: 20}
+          resources: {requests: {cpu: 25m, memory: 64Mi}, limits: {memory: 192Mi}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: stats-web, namespace: analytics, labels: {app: stats-web}}
+spec:
+  selector: {app: stats-web}
+  ports: [{name: http, port: 8000, targetPort: 8000}]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stats-web
+  namespace: analytics
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: stats.kardol.us
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend: {service: {name: stats-web, port: {number: 8000}}}
