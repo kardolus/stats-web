@@ -110,10 +110,17 @@ td:last-child,th:last-child{white-space:nowrap}
    scrolling sideways (the minmax(360px) chart grid) and fits the ranked table
    (abbreviated headers: Complaints->Total, Violation->Viol.). */
 @media(max-width:600px){
+  body{overflow-x:hidden}          /* guard: never let a wide child scroll the whole page */
   .grid2{grid-template-columns:1fr}
   table{font-size:13px}
   th,td{padding:6px 7px}
-  td:first-child{white-space:normal;overflow-wrap:anywhere}
+  /* The "By site" table: fixed layout pins it to 100% of the viewport and lets the
+     Site column WRAP (max-width on a <td> is ignored in auto layout — the real fix
+     is table-layout:fixed + explicit column widths). Since is hidden, leaving 4 cols. */
+  .sites{table-layout:fixed}
+  .sites th:first-child,.sites td:first-child{width:43%;white-space:normal;overflow-wrap:break-word;word-break:normal}
+  .sites th.num,.sites td.num{width:19%}
+  .col-since{display:none}
   .lbl-full{display:none}
   .lbl-short{display:inline}
 }

@@ -324,7 +324,7 @@ def render_overview() -> str:
             f'<td class="num">{_fmt(s["visits"])}</td>'
             f'<td class="num">{_fmt(s["visits_7d"])}</td>'
             f'<td class="num">{_fmt(s["pageviews"])}</td>'
-            f'<td class="num meta">{_ago(s["since"])}</td></tr>'
+            f'<td class="num meta col-since">{_ago(s["since"])}</td></tr>'
         )
     body = f"""
     <div class="kpis">
@@ -336,8 +336,8 @@ def render_overview() -> str:
     </div>
     <p class="meta">Aggregated across every site tracked by <a href="https://analytics.kardol.us" target="_blank" rel="noopener">Umami</a> · since {_ago(t["since"])} · updates every {CACHE_TTL // 60 or 1} min.</p>
     <div class="card"><div class="card-head"><h2>By site</h2></div>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Site</th><th class="num">Visits</th><th class="num">7&nbsp;days</th><th class="num">Pageviews</th><th class="num">Since</th></tr></thead>
+      <div class="table-wrap"><table class="sites">
+        <thead><tr><th>Site</th><th class="num">Visits</th><th class="num">7&nbsp;days</th><th class="num"><span class="lbl-full">Pageviews</span><span class="lbl-short">Views</span></th><th class="num col-since">Since</th></tr></thead>
         <tbody>{rows}</tbody></table></div></div>"""
     return shell("Overview", "/", body)
 
