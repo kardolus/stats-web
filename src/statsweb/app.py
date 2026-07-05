@@ -300,11 +300,36 @@ def render_patterns() -> str:
       const css = getComputedStyle(document.documentElement);
       Chart.defaults.color = css.getPropertyValue('--meta').trim();
       Chart.defaults.font.family = "'DM Sans',sans-serif";
+      // Draw the day's total above each stack (visible datasets only, so it
+      // stays honest when sites are toggled off via the legend).
+      const stackTotals = {{
+        id: 'stackTotals',
+        afterDatasetsDraw(chart) {{
+          const ctx = chart.ctx;
+          chart.data.labels.forEach((_, i) => {{
+            let total = 0, x = null, y = Infinity;
+            chart.data.datasets.forEach((d, di) => {{
+              if (!chart.isDatasetVisible(di)) return;
+              total += d.data[i] || 0;
+              const el = chart.getDatasetMeta(di).data[i];
+              if (el && el.y < y) {{ y = el.y; x = el.x; }}
+            }});
+            if (!total || x === null) return;
+            ctx.save();
+            ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+            ctx.font = "500 11px 'JetBrains Mono',monospace";
+            ctx.fillStyle = css.getPropertyValue('--meta').trim();
+            ctx.fillText(total, x, y - 3);
+            ctx.restore();
+          }});
+        }}
+      }};
       new Chart('traffic', {{type:'bar', data:{chart_json},
+        plugins:[stackTotals],
         options:{{maintainAspectRatio:false,
           plugins:{{legend:{{position:'bottom',labels:{{boxWidth:10,padding:8}}}}}},
           scales:{{x:{{stacked:true,grid:{{display:false}}}},
-                   y:{{stacked:true,beginAtZero:true,ticks:{{precision:0}}}}}}}}}});
+                   y:{{stacked:true,beginAtZero:true,grace:'8%',ticks:{{precision:0}}}}}}}}}});
     </script>"""
     return shell("Patterns", "/patterns", body)
 

@@ -13,7 +13,7 @@ spec:
       imagePullSecrets: [{name: ghcr-pull}]
       containers:
         - name: stats-web
-          image: ghcr.io/kardolus/stats-web:v9
+          image: ghcr.io/kardolus/stats-web:v10
           imagePullPolicy: IfNotPresent
           ports: [{containerPort: 8000, name: http}]
           env:
