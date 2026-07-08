@@ -228,12 +228,14 @@ _PATTERNS_CSS = """
 .rank-lbl{position:relative;z-index:1;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}
 .rank-n{position:relative;z-index:1;font-family:var(--font-mono);font-size:13px;color:var(--fg)}
 .trio{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.trio>div{min-width:0}
+.trio.duo{grid-template-columns:1fr 1fr}
 .trio h3{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--meta);font-weight:600}
 .refkpi{display:flex;gap:14px;margin-bottom:10px}
 .refkpi .b{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px}
 .refkpi .b .n{font-family:var(--font-mono);font-size:20px;font-weight:600}
 .refkpi .b .l{font-size:11px;color:var(--meta);text-transform:uppercase;letter-spacing:.04em}
-@media(max-width:640px){.trio{grid-template-columns:1fr}}
+@media(max-width:640px){.trio,.trio.duo{grid-template-columns:1fr}}
 """
 
 
@@ -266,7 +268,7 @@ def render_patterns() -> str:
       <div class="b"><div class="n">{_fmt(rf["external"])}</div><div class="l">external</div></div>
       <div class="b"><div class="n">{_fmt(rf["internal"])}</div><div class="l">cross-site</div></div>
     </div>
-    <div class="trio" style="grid-template-columns:1fr 1fr">
+    <div class="trio duo">
       <div><h3>Top external sources</h3>{_ranklist(rf["top_ext"], "src", "visits")}</div>
       <div><h3>Between your sites</h3>{links}</div>
     </div>"""
