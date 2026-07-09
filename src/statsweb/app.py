@@ -427,6 +427,7 @@ def shell(title: str, active: str, body: str) -> str:
   </div>
 </div><nav class="top-nav">{nav}</nav></div>
 <main>{body}</main>
+<footer class="homelab-foot"><svg class="foot-mark" viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M12 1.6l1.9 8.5 8.5 1.9-8.5 1.9-1.9 8.5-1.9-8.5-8.5-1.9 8.5-1.9z"/></svg>self-hosted on forge · <a href="https://kardol.us">kardol.us</a> homelab</footer>
 </body>
 </html>"""
 
