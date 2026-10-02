@@ -139,7 +139,7 @@ def referrers() -> dict:
             """
             SELECT CASE
                      WHEN referrer_domain IS NULL OR referrer_domain = '' THEN 'direct'
-                     WHEN referrer_domain LIKE '%kardol.us' THEN 'internal'
+                     WHEN (referrer_domain = 'kardol.us' OR referrer_domain LIKE '%.kardol.us' OR referrer_domain IN ('ascend-ts-bot.com', 'www.ascend-ts-bot.com')) THEN 'internal'
                      ELSE 'external' END AS kind,
                    count(DISTINCT session_id) AS visits
             FROM website_event WHERE event_type = 1 GROUP BY 1
@@ -149,14 +149,14 @@ def referrers() -> dict:
             SELECT referrer_domain AS src, count(DISTINCT session_id) AS visits
             FROM website_event
             WHERE event_type = 1 AND referrer_domain IS NOT NULL AND referrer_domain <> ''
-              AND referrer_domain NOT LIKE '%kardol.us'
+              AND NOT (referrer_domain = 'kardol.us' OR referrer_domain LIKE '%.kardol.us' OR referrer_domain IN ('ascend-ts-bot.com', 'www.ascend-ts-bot.com'))
             GROUP BY 1 ORDER BY visits DESC LIMIT 10
             """)
         internal = _q(
             """
             SELECT e.referrer_domain AS src, w.domain AS dst, count(*) AS hits
             FROM website_event e JOIN website w USING (website_id)
-            WHERE e.event_type = 1 AND e.referrer_domain LIKE '%kardol.us'
+            WHERE e.event_type = 1 AND (e.referrer_domain = 'kardol.us' OR referrer_domain LIKE '%.kardol.us' OR referrer_domain IN ('ascend-ts-bot.com', 'www.ascend-ts-bot.com'))
               AND e.referrer_domain <> w.domain
             GROUP BY 1, 2 ORDER BY hits DESC LIMIT 8
             """)
