@@ -1,13 +1,13 @@
-"""stats.kardol.us — a cross-site visitor rollup over the self-hosted Umami DB.
+"""stats.kardol.us - a cross-site visitor rollup over the self-hosted Umami DB.
 
 Umami's OSS dashboard is strictly per-website; this reads the same Postgres
 read-only (role stats_ro) and shows what Umami won't: totals + patterns ACROSS
-every tracked site. Two tabs — Overview (totals + per-site table) and Patterns
+every tracked site. Two tabs - Overview (totals + per-site table) and Patterns
 (traffic over time, where visitors come from incl. cross-site links, top pages,
 audience). Flightdeck styling, shared with the other kardol.us apps.
 
 Design note: traffic here is small (hundreds of visits), so everything is framed
-in ABSOLUTE counts — no pie charts, no percent-growth badges, low-volume rows
+in ABSOLUTE counts - no pie charts, no percent-growth badges, low-volume rows
 grouped into "other". Web Vitals are intentionally omitted (Umami isn't collecting
 them). "visit" = distinct session_id; "pageview" = website_event.event_type = 1.
 """
@@ -52,7 +52,7 @@ def _q(sql: str, args=None) -> list[dict]:
     conn = pool.getconn()
     try:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            # pass params ONLY when present — a bare execute(sql) skips %-interpolation,
+            # pass params ONLY when present - a bare execute(sql) skips %-interpolation,
             # so literal % in LIKE patterns (e.g. '%kardol.us') needs no escaping.
             cur.execute(sql, args) if args else cur.execute(sql)
             return cur.fetchall()
@@ -156,8 +156,8 @@ def referrers() -> dict:
             """
             SELECT e.referrer_domain AS src, w.domain AS dst, count(*) AS hits
             FROM website_event e JOIN website w USING (website_id)
-            WHERE e.event_type = 1 AND (e.referrer_domain = 'kardol.us' OR referrer_domain LIKE '%.kardol.us' OR referrer_domain IN ('ascend-ts-bot.com', 'www.ascend-ts-bot.com'))
-              AND e.referrer_domain <> w.domain
+            WHERE e.event_type = 1 AND (e.referrer_domain = 'kardol.us' OR e.referrer_domain LIKE '%.kardol.us' OR e.referrer_domain IN ('ascend-ts-bot.com', 'www.ascend-ts-bot.com'))
+              AND e.referrer_domain NOT IN (w.domain, 'www.' || w.domain)
             GROUP BY 1, 2 ORDER BY hits DESC LIMIT 8
             """)
         b = {r["kind"]: int(r["visits"]) for r in buckets}
@@ -196,7 +196,7 @@ def _fmt(n) -> str:
 
 def _ago(dt) -> str:
     if not dt:
-        return "—"
+        return "-"
     days = (datetime.now(timezone.utc) - dt).days
     return dt.strftime("%b %-d, %Y") + (f" · {days}d" if days else "")
 
@@ -289,7 +289,7 @@ def render_patterns() -> str:
     </div>"""
 
     body = f"""
-    <p class="meta">Patterns across every tracked site · small numbers still — everything is shown as raw counts, not percentages.</p>
+    <p class="meta">Patterns across every tracked site · small numbers still - everything is shown as raw counts, not percentages.</p>
     <div class="card"><div class="card-head"><h2>Visits by site · last 14 days</h2></div>
       <div class="chart-wrap" style="height:260px"><canvas id="traffic"></canvas></div></div>
     <div class="card"><div class="card-head"><h2>Where visitors come from</h2></div>{ref_body}</div>
@@ -343,7 +343,7 @@ def render_overview() -> str:
     rows = ""
     for s in sites:
         dom = s["domain"] or ""
-        name = s["name"] or dom or "—"
+        name = s["name"] or dom or "-"
         link = f'<a href="https://{dom}" target="_blank" rel="noopener">{name}</a>' if dom else name
         dim = "" if (s["visits"] or 0) > 0 else ' style="opacity:.5"'
         rows += (
@@ -399,7 +399,7 @@ def shell(title: str, active: str, body: str) -> str:
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <meta name="description" content="Total visits and patterns across every kardol.us site, aggregated from self-hosted Umami analytics.">
 <meta property="og:title" content="kardol.us · analytics">
-<meta property="og:description" content="Visits, referrers and patterns across every kardol.us site — aggregated from self-hosted Umami.">
+<meta property="og:description" content="Visits, referrers and patterns across every kardol.us site - aggregated from self-hosted Umami.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://stats.kardol.us">
 <meta property="og:image" content="https://stats.kardol.us/og.png">
